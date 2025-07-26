@@ -1,7 +1,7 @@
 resource "digitalocean_project" "lotuscove" {
-  name = local.project
+  name        = local.project
   description = "Test environment for Lotus Cove"
-  purpose = "Shenanigans"
+  purpose     = "Shenanigans"
   environment = "Development"
-  resources = []
+  resources   = []
 }

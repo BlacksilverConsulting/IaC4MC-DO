@@ -1,6 +1,6 @@
 locals {
   droplet = { agent = true, monitoring = true, size = "g-2vcpu-8gb" }
-  backup  = { enable = true, plan = "daily", hour = "4" }
+  backup  = { enable = false, plan = "daily", hour = "4" }
 }
 
 resource "digitalocean_droplet" "lotuscove" {
@@ -11,7 +11,7 @@ resource "digitalocean_droplet" "lotuscove" {
   name = "${local.project}1"
 
   ssh_keys = [data.terraform_remote_state.fsitma.outputs.pbmac_ssh_key_id,
-              data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id ]
+  data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id]
 
   droplet_agent = local.droplet.agent
 
@@ -19,11 +19,13 @@ resource "digitalocean_droplet" "lotuscove" {
 
   backups = local.backup.enable
 
-  backup_policy {
-    plan = local.backup.plan
-    hour = local.backup.hour
+  dynamic "backup_policy" {
+    for_each = local.backup.enable ? [1] : []
+    content {
+      plan = local.backup.plan
+      hour = local.backup.hour
+    }
   }
-
 }
 
 resource "digitalocean_droplet" "lotuscove-test" {
@@ -35,7 +37,7 @@ resource "digitalocean_droplet" "lotuscove-test" {
   name = "${local.project}2"
 
   ssh_keys = [data.terraform_remote_state.fsitma.outputs.pbmac_ssh_key_id,
-              data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id ]
+  data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id]
 
   droplet_agent = local.droplet.agent
 

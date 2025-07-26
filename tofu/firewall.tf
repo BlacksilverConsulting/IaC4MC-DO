@@ -1,7 +1,7 @@
 locals {
   addr = {
     trusted = ["174.100.160.6/32", "104.2.157.7/32"],
-    world = ["0.0.0.0/0", "::/0"]
+    world   = ["0.0.0.0/0", "::/0"]
   }
   proto = { tcp = "tcp", udp = "udp", icmp = "icmp" }
   port  = { all = "1-65535", ssh = "22", mc = "25611" }
@@ -21,7 +21,7 @@ resource "digitalocean_firewall" "lotuscove-prod" {
   inbound_rule {
     protocol         = local.proto.tcp
     port_range       = local.port.mc
-    source_addresses = local.addr.trusted
+    source_addresses = local.addr.world
   }
 
   outbound_rule {
