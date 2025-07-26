@@ -1,0 +1,47 @@
+---
+- name: Install general-purpose stuff
+  hosts: servers
+  become: false
+
+  vars:
+    keyfile: /root/.ssh/id_ed25519
+
+  tasks:
+    - name: Install EPEL
+      ansible.builtin.package:
+        name:
+          - epel-release
+        state: present
+
+    - name: Install essentials
+      ansible.builtin.package:
+        name:
+          - vim
+          - lynx
+        state: present
+
+    - name: ED25519 keypair for root
+      community.crypto.openssh_keypair:
+        comment: root@fsitma1.fsitma.com
+        force: false
+        path: "{{ keyfile }}"
+        type: "ed25519"
+
+    - name: Make public key public-readable
+      ansible.builtin.file:
+        group: root
+        mode: "0644"
+        owner: root
+        path: "{{ keyfile }}.pub"
+
+    - name: Check if firewalld service unit file exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/multi-user.target.wants/firewalld.service
+      register: firewalld_unit_file
+
+    - name: Disable and stop firewalld if installed
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: false
+      when: firewalld_unit_file.stat.exists

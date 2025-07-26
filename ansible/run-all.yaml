@@ -1,0 +1,7 @@
+---
+- name: General Configuration
+  import_playbook: "010-general.yaml"
+- name: Fail2Ban
+  import_playbook: "030-fail2ban.yaml"
+- name: Systemd (cursed be thy name)
+  import_playbook: "080-systemd.yaml"
