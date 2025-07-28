@@ -4,8 +4,8 @@ provider "onepassword" {
 }
 
 provider "digitalocean" {
-  token = data.onepassword_item.do_token.password
-  spaces_access_id = data.onepassword_item.spaces.username
+  token             = data.onepassword_item.do_token.password
+  spaces_access_id  = data.onepassword_item.spaces.username
   spaces_secret_key = data.onepassword_item.spaces.password
 }
 
