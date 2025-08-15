@@ -1,0 +1,104 @@
+---
+- name: Deploy ObsidiaMC Web Console
+  hosts: servers
+    #  become: true
+
+  vars:
+    obsidiamc_install_dir: "/opt/obsidiamc"
+    obsidiamc_user: "obsidiamc" # Dedicated user for the console
+    obsidiamc_group: "obsidiamc"
+    obsidiamc_port: 5000 # Default Flask port, change if needed
+    obsidiamc_admin_password: "YOUR_SECURE_ADMIN_PASSWORD" # CHANGE THIS!
+
+  tasks:
+    - name: Ensure Python3 and pip are installed
+      ansible.builtin.dnf:
+        name: python3-pip
+        state: present
+
+    - name: Create ObsidiaMC group
+      ansible.builtin.group:
+        name: "{{ obsidiamc_group }}"
+        state: present
+
+    - name: Create ObsidiaMC user
+      ansible.builtin.user:
+        name: "{{ obsidiamc_user }}"
+        group: "{{ obsidiamc_group }}"
+        system: true
+        create_home: true
+        home: "{{ obsidiamc_install_dir }}" # Where the app will run from
+        shell: "/bin/bash" # Or /bin/nologin
+        state: present
+
+    - name: Create ObsidiaMC installation directory
+      ansible.builtin.file:
+        path: "{{ obsidiamc_install_dir }}"
+        state: directory
+        owner: "{{ obsidiamc_user }}"
+        group: "{{ obsidiamc_group }}"
+        mode: "0755"
+        recurse: true
+
+    - name: Clone ObsidiaMC repository
+      ansible.builtin.git:
+        repo: 'https://github.com/Jmcgee01125/ObsidiaMC-Web-Console.git'
+        dest: "{{ obsidiamc_install_dir }}"
+        version: master # Or a specific tag/branch if available
+        # You might need to add `accept_hostkey: true` if you haven't connected to GitHub before
+
+    - name: Install Python dependencies
+      ansible.builtin.pip:
+        requirements: "{{ obsidiamc_install_dir }}/requirements.txt" # Assuming a requirements.txt file
+        virtualenv: "{{ obsidiamc_install_dir }}/venv" # Use a virtual environment
+        virtualenv_command: python3 -m venv
+      become: true
+      become_user: "{{ obsidiamc_user }}"
+
+    - name: Create systemd service file for ObsidiaMC
+      ansible.builtin.template:
+        src: obsidiamc.service.j2
+        dest: /etc/systemd/system/obsidiamc.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Reload systemd and start obsidiamc
+
+    - name: Configure ObsidiaMC (obsidia_website.conf)
+      ansible.builtin.template:
+        src: obsidia_website.conf.j2 # Create this template file
+        dest: "{{ obsidiamc_install_dir }}/config/obsidia_website.conf"
+        owner: "{{ obsidiamc_user }}"
+        group: "{{ obsidiamc_group }}"
+        mode: "0644"
+      notify: Restart obsidiamc
+
+    # This task might not be needed if you only have one server
+    # and obsidia.conf is generated on first launch.
+    # Otherwise, copy or template a default obsidia.conf for your server.
+    - name: Configure server specific obsidia.conf (if needed)
+      ansible.builtin.template:
+        src: obsidia.conf.j2 # Create this template file for each server
+        dest: "{{ minecraft_server_dir }}/obsidia.conf" # Assuming minecraft_server_dir is defined
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_group }}"
+        mode: "0644"
+      # This task would need to be inside a loop if you manage multiple MC servers
+
+    - name: Print ObsidiaMC URL
+      ansible.builtin.debug:
+        msg: "ObsidiaMC Web Console is available at http://{{ ansible_fqdn }}:{{ obsidiamc_port }}"
+
+  handlers:
+    - name: Reload systemd and start obsidiamc
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: obsidiamc
+        state: started
+        enabled: true
+    - name: Restart obsidiamc
+      ansible.builtin.systemd:
+        daemon_reload: false
+        name: obsidiamc
+        state: restarted
+        enabled: true

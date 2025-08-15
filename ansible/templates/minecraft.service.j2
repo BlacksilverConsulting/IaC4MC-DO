@@ -1,0 +1,18 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Service]
+User={{ minecraft_user }}
+Group={{ minecraft_group }}
+WorkingDirectory={{ minecraft_server_dir }}
+ExecStart=/usr/bin/java -Xmx6144M -Xms1024M -jar {{ minecraft_server_dir }}/server.jar nogui
+StandardInput=null
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+

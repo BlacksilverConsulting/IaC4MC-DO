@@ -1,7 +1,12 @@
 ---
-- name: General Configuration
-  import_playbook: "010-general.yaml"
+- name: OS Configuration Part 1
+  import_playbook: "playbooks/010-general.yaml"
+- name: OS Configuration Part 2
+  import_playbook: "playbooks/020-linux.yaml"
 - name: Fail2Ban
-  import_playbook: "030-fail2ban.yaml"
-- name: Systemd (cursed be thy name)
-  import_playbook: "080-systemd.yaml"
+  import_playbook: "playbooks/030-fail2ban.yaml"
+- name: Java Development Kit
+  import_playbook: "playbooks/040-jdk.yaml"
+
+- name: Install/Start PaperMC
+  import_playbook: "playbooks/100-paper.yaml"

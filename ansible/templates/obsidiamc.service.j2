@@ -1,0 +1,18 @@
+[Unit]
+Description=ObsidiaMC Web Console
+After=network.target
+
+[Service]
+User={{ obsidiamc_user }}
+Group={{ obsidiamc_group }}
+WorkingDirectory={{ obsidiamc_install_dir }}
+ExecStart={{ obsidiamc_install_dir }}/venv/bin/python3 {{ obsidiamc_install_dir }}/__main__.py
+# Use the python executable from within the virtual environment
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+

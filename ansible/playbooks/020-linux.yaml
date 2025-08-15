@@ -1,5 +1,5 @@
 ---
-- name: Configure systemd (cursed be thy name)
+- name: General Linux OS configuration
   hosts: servers
   become: false
 
@@ -7,6 +7,13 @@
     coredumpdir: /etc/systemd/coredump.conf.d
 
   tasks:
+    - name: Install utility packages
+      ansible.builtin.package:
+        name:
+          - yum-utils
+          - btop
+        state: present
+
     - name: Check if the directory exists
       ansible.builtin.stat:
         path: "{{ coredumpdir }}"
