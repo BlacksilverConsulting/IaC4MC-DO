@@ -45,10 +45,12 @@ resource "digitalocean_droplet" "lotuscove-test" {
 
   backups = local.backup.enable
 
-  backup_policy {
-    plan = local.backup.plan
-    hour = local.backup.hour
+  dynamic "backup_policy" {
+    for_each = local.backup.enable ? [1] : []
+    content {
+      plan = local.backup.plan
+      hour = local.backup.hour
+    }
   }
-
 }
 

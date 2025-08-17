@@ -3,5 +3,5 @@ resource "digitalocean_project" "lotuscove" {
   description = "Test environment for Lotus Cove"
   purpose     = "Shenanigans"
   environment = "Development"
-  resources   = []
+  resources   = [digitalocean_droplet.lotuscove.urn]
 }
