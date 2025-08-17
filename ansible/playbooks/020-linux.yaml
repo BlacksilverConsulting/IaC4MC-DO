@@ -12,6 +12,7 @@
         name:
           - yum-utils
           - btop
+          - screen
         state: present
 
     - name: Check if the directory exists
