@@ -14,6 +14,10 @@ terraform {
       source  = "1Password/onepassword"
       version = "~> 2.1"
     }
+    local = {
+      source = "hashicorp/local"
+      version = "~>2.1"
+    }
   }
   backend "s3" {
     endpoint = "${local.region}.digitaloceanspaces.com"
