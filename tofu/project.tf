@@ -3,5 +3,12 @@ resource "digitalocean_project" "lotuscove" {
   description = "Test environment for Lotus Cove"
   purpose     = "Shenanigans"
   environment = "Development"
-  resources   = [digitalocean_droplet.lotuscove.urn]
+  resources   = concat(
+    [
+      digitalocean_droplet.lotuscove.urn
+    ],
+    [
+      for droplet in digitalocean_droplet.lotuscove-test : droplet.id if length(digitalocean_droplet.lotuscove-test) > 0
+    ]
+  )
 }
