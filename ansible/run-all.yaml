@@ -10,3 +10,7 @@
 
 - name: Install/Start PaperMC
   import_playbook: "playbooks/100-paper.yaml"
+- name: Systemd configuration
+  import_playbook: "playbooks/110-systemd.yaml"
+- name: EssentialsX
+  import_playbook: "playbooks/120-essentials.yaml"

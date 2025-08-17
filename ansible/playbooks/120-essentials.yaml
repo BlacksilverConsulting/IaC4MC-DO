@@ -1,0 +1,41 @@
+---
+- name: EssentialsX and friends
+  hosts: servers
+
+  vars:
+
+      # https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars/EssentialsX-2.22.0-dev+18-7c89592.jar
+      # https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars/EssentialsXSpawn-2.22.0-dev+18-7c89592.jar
+
+    plugins_dir: "{{ minecraft_server_dir }}/plugins"
+    base: "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars"
+
+
+  tasks:
+    - name: Download EssentialsX Core
+      ansible.builtin.get_url:
+        url: "{{ base }}/EssentialsX-2.22.0-dev+18-7c89592.jar"
+        dest: "{{ plugins_dir }}/EssentialsX.jar"
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_group }}"
+        mode: "0644"
+        validate_certs: true
+      notify: Restart Minecraft
+
+    - name: Download EssentialsX Spawn
+      ansible.builtin.get_url:
+        url: "{{ base }}/EssentialsXSpawn-2.22.0-dev+18-7c89592.jar"
+        dest: "{{ plugins_dir }}/EssentialsXSpawn.jar"
+        owner: "{{ minecraft_user }}"
+        group: "{{ minecraft_group }}"
+        mode: "0644"
+        validate_certs: true
+      notify: Restart Minecraft
+
+  handlers:
+    - name: Restart Minecraft
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: minecraft
+        state: restarted
+        enabled: true
