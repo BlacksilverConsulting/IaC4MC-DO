@@ -1,0 +1,62 @@
+---
+- name: Create minecraft group
+  ansible.builtin.group:
+    name: "{{ minecraft_group }}"
+    state: present
+
+- name: Create minecraft user
+  ansible.builtin.user:
+    name: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    system: true
+    create_home: true
+    home: "{{ minecraft_server_dir }}"
+    shell: "/bin/nologin"
+    state: present
+
+- name: Create Minecraft server directory
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0755"
+    recurse: true
+
+- name: Download PaperMC server JAR
+  ansible.builtin.get_url:
+    url: "{{ paper_mc_jar_url }}"
+    dest: "{{ minecraft_server_dir }}/{{ paper_mc_jar_name }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+    checksum: "sha256:{{ paper_mc_jar_checksum }}"
+    validate_certs: true
+
+- name: Link generic server.jar to PaperMC JAR
+  # (So we don't have to update the systemd unit file)
+  ansible.builtin.file:
+    src: "{{ minecraft_server_dir }}/{{ paper_mc_jar_name }}"
+    dest: "{{ minecraft_server_dir }}/server.jar"
+    state: link
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+
+- name: Install server.properties from template
+  ansible.builtin.template:
+    src: "{{ minecraft_propfile }}.j2"
+    dest: "{{ minecraft_server_dir }}/{{ minecraft_propfile }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+
+- name: Create EULA file (PaperMC also requires EULA)
+  ansible.builtin.copy:
+    content: |
+      #By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
+      #Fri Jul 25 17:30:00 EDT 2025 # Adjust date as desired
+      eula=true
+    dest: "{{ minecraft_server_dir }}/eula.txt"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"

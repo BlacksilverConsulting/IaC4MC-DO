@@ -1,0 +1,7 @@
+---
+
+linux_keyfile: "/root/.ssh/id_ed25519"
+
+linux_coredumpdir: "/etc/systemd/coredump.conf.d"
+
+linux_localjail: "/etc/fail2ban/jail.local"

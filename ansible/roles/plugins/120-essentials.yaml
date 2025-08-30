@@ -10,7 +10,6 @@
     plugins_dir: "{{ minecraft_server_dir }}/plugins"
     base: "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars"
 
-
   tasks:
     - name: Download EssentialsX Core
       ansible.builtin.get_url:

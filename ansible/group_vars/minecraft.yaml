@@ -1,0 +1,7 @@
+console_port: "8765"
+project: "lotuscove"
+minecraft_user: "minecraft"
+minecraft_group: "{{ minecraft_user }}"
+minecraft_server_root: "/opt/minecraft"
+minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
+minecraft_propfile: "server.properties"

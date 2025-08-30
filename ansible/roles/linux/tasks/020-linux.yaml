@@ -1,0 +1,36 @@
+---
+- name: Install utility packages
+  ansible.builtin.package:
+    name:
+      - yum-utils
+      - btop
+      - screen
+    state: present
+
+- name: Check if the directory exists
+  ansible.builtin.stat:
+    path: "{{ linux_coredumpdir }}"
+  register: coredumpdir_stat
+
+- name: Create directory if needed
+  ansible.builtin.file:
+    path: "{{ linux_coredumpdir }}"
+    state: directory
+    mode: "0644"
+    owner: root
+    group: root
+  when: not coredumpdir_stat.stat.exists
+
+- name: Create nodump.conf and set coredump options
+  community.general.ini_file:
+    path: "{{ linux_coredumpdir }}/nodump.conf"
+    section: Coredump
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    mode: "0644"
+    owner: root
+    group: root
+  loop:
+    - { key: "Storage", value: "none" }
+    - { key: "ProcessSizeMax", value: "0" }
+  notify: Reload systemd daemon

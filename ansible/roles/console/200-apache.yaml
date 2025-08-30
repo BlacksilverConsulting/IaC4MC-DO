@@ -1,0 +1,48 @@
+---
+- name: Install httpd and stuff
+  hosts: servers
+  become: false
+
+  vars:
+    domain: lc.blacksilver.org
+
+  tasks:
+    - name: Install web server
+      ansible.builtin.package:
+        name:
+          - httpd
+          - mod_ssl
+          - mod_md
+          - certbot
+          - certbot-apache
+        state: present
+      notify: Restart_httpd
+
+    - name: Set ServerName
+      ansible.builtin.lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: "^ServerName"
+        line: "ServerName {{ domain }}"
+        state: present
+      notify: Restart_httpd
+
+    - name: VirtualHost 80 configuration
+      ansible.builtin.copy:
+        src: "{{ domain }}.conf"
+        dest: "/etc/httpd/conf.d/{{ domain }}.conf"
+        force: false
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart_httpd
+
+    - name: Start / enable httpd
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+
+  handlers:
+    - name: Restart_httpd
+      ansible.builtin.service:
+        name: httpd
+        state: restarted

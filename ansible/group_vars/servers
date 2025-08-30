@@ -1,5 +1,0 @@
-minecraft_servers_root: "/opt/minecraft"
-project: "lotuscove"
-minecraft_user: "minecraft"
-minecraft_group: "{{ minecraft_user }}"
-minecraft_server_dir: "{{ minecraft_servers_root }}/{{ project }}"

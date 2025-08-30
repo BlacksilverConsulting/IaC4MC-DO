@@ -1,0 +1,14 @@
+---
+- name: Add Adoptium repository
+  ansible.builtin.yum_repository:
+    name: Adoptium
+    description: Adoptium
+    baseurl: https://packages.adoptium.net/artifactory/rpm/centos/$releasever/$basearch
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://packages.adoptium.net/artifactory/api/gpg/key/public
+
+- name: Install Java 21 JDK
+  ansible.builtin.dnf:
+    name: temurin-21-jdk
+    state: present

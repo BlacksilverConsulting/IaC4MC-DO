@@ -1,0 +1,9 @@
+---
+- name: Install JDK
+  ansible.builtin.include_tasks: 100-jdk.yaml
+
+- name: Install Paper MC
+  ansible.builtin.include_tasks: 110-paper.yaml
+
+- name: Create systemd service unit
+  ansible.builtin.include_tasks: 120-systemd.yaml

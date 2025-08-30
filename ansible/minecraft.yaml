@@ -1,0 +1,9 @@
+---
+- name: Minecraft Servers
+  hosts: minecraft
+  become: true
+  roles:
+    - linux
+    - paper_mc
+#    - console
+#    - plugins

@@ -1,0 +1,7 @@
+---
+- name: Reload systemd and start Minecraft
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: minecraft
+    state: restarted
+    enabled: true

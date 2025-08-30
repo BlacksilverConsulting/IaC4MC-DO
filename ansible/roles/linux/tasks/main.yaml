@@ -1,0 +1,9 @@
+---
+- name: General Setup
+  ansible.builtin.include_tasks: 010-general.yaml
+
+- name: Base Linux Config
+  ansible.builtin.include_tasks: 020-linux.yaml
+
+- name: Fail2Ban Setup
+  ansible.builtin.include_tasks: 030-fail2ban.yaml

@@ -1,0 +1,36 @@
+---
+- name: Install fail2ban
+  ansible.builtin.package:
+    name:
+      - fail2ban-all
+    state: present
+  notify: Restart fail2ban
+
+- name: Enable fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: true
+  notify: Restart fail2ban
+
+- name: Copy base configuration
+  ansible.builtin.copy:
+    force: false
+    src: /etc/fail2ban/jail.conf
+    remote_src: true
+    dest: "{{ linux_localjail }}"
+    mode: "0644"
+    owner: root
+    group: root
+  notify: Restart fail2ban
+
+- name: Enable jails
+  community.general.ini_file:
+    path: "{{ linux_localjail }}"
+    section: "{{ item }}"
+    option: enabled
+    value: true
+    mode: "0644"
+    backup: false
+  with_items:
+    - sshd
+  notify: Restart fail2ban
