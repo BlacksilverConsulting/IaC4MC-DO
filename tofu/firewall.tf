@@ -4,7 +4,7 @@ locals {
     world   = ["0.0.0.0/0", "::/0"]
   }
   proto = { tcp = "tcp", udp = "udp", icmp = "icmp" }
-  port  = { all = "1-65535", ssh = "22", mc = "25611" }
+  port  = { all = "1-65535", ssh = "22", console = "8765", mc = "25611" }
 }
 
 resource "digitalocean_firewall" "lotuscove-prod" {
@@ -21,6 +21,12 @@ resource "digitalocean_firewall" "lotuscove-prod" {
   inbound_rule {
     protocol         = local.proto.tcp
     port_range       = local.port.mc
+    source_addresses = local.addr.world
+  }
+
+  inbound_rule {
+    protocol         = local.proto.tcp
+    port_range       = local.port.console
     source_addresses = local.addr.world
   }
 

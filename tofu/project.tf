@@ -3,7 +3,7 @@ resource "digitalocean_project" "lotuscove" {
   description = "Test environment for Lotus Cove"
   purpose     = "Shenanigans"
   environment = "Development"
-  resources   = concat(
+  resources = concat(
     [
       digitalocean_droplet.lotuscove.urn
     ],
