@@ -1,0 +1,34 @@
+---
+- name: Install web server
+  ansible.builtin.package:
+    name:
+      - httpd
+      - mod_ssl
+      - mod_md
+      - certbot
+      - certbot-apache
+    state: present
+  notify: Restart httpd
+
+- name: Set ServerName
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: "^ServerName"
+    line: "ServerName {{ dns_name }}"
+    state: present
+  notify: Restart httpd
+
+- name: VirtualHost 80 configuration
+  ansible.builtin.copy:
+    src: "{{ dns_name }}.conf"
+    dest: "/etc/httpd/conf.d/{{ dns_name }}.conf"
+    force: false
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart httpd
+
+- name: Start / enable httpd
+  ansible.builtin.service:
+    name: httpd
+    enabled: true

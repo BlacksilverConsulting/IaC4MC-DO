@@ -5,5 +5,5 @@
   roles:
     - linux
     - paper_mc
-#    - console
+    - console
 #    - plugins
