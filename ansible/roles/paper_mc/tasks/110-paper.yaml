@@ -14,10 +14,6 @@
     shell: "/bin/nologin"
     state: present
 
-- name: DEBUG - User/Group
-  ansible.builtin.debug:
-    msg: "User: ({{ minecraft_user }}) Group: ({{ minecraft_group }})"
-
 - name: Check for Minecraft server directory
   ansible.builtin.stat:
     path: "{{ minecraft_server_dir }}"
@@ -27,8 +23,8 @@
   ansible.builtin.file:
     path: "{{ minecraft_server_dir }}"
     state: directory
-    owner: "root"
-    group: "root"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
     mode: "0755"
     recurse: true
   when: not server_dir.stat.exists
