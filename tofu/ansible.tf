@@ -21,7 +21,7 @@ project: "${local.project}"
 minecraft_user: "minecraft"
 minecraft_group: "{{ minecraft_user }}"
 minecraft_server_root: "/opt/minecraft"
-minecraft_server_dir: "{{ minecraft_root }}/{{ project }}"
+minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
 minecraft_propfile: "server.properties"
 EOF
 
