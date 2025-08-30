@@ -2,13 +2,13 @@ resource "local_file" "ansible_inventory" {
   filename = "${path.module}/../ansible/hosts"
   content  = <<EOF
 [minecraft]
-${local.project} ansible_host=${digitalocean_droplet.lotuscove.ipv4_address}
-${var.backup_id != null ? "${local.project}-test ansible_host=${digitalocean_droplet.lotuscove-test[0].ipv4_address}" : ""}
+${local.project} ansible_host=${digitalocean_droplet.prod.ipv4_address}
+${var.backup_id != null ? "${local.project}-test ansible_host=${digitalocean_droplet.test[0].ipv4_address}" : ""}
 EOF
 
   depends_on = [
-    digitalocean_droplet.lotuscove,
-    digitalocean_droplet.lotuscove-test
+    digitalocean_droplet.prod,
+    digitalocean_droplet.test
   ]
   file_permission = "0744"
 }
@@ -23,10 +23,11 @@ minecraft_group: "{{ minecraft_user }}"
 minecraft_server_root: "/opt/minecraft"
 minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
 minecraft_propfile: "server.properties"
+dns_name: "lc.blacksilver.org"
 EOF
 
   depends_on = [
-    digitalocean_firewall.lotuscove-prod
+    digitalocean_firewall.prod
   ]
   file_permission = "0744"
 }
@@ -38,7 +39,7 @@ server_port: "${local.port.mc}"
 EOF
 
   depends_on = [
-    digitalocean_firewall.lotuscove-prod
+    digitalocean_firewall.prod
   ]
   file_permission = "0744"
 }

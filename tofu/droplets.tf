@@ -3,7 +3,7 @@ locals {
   backup  = { enable = false, plan = "daily", hour = "4" }
 }
 
-resource "digitalocean_droplet" "lotuscove" {
+resource "digitalocean_droplet" "prod" {
   image  = "centos-stream-9-x64"
   region = local.region
   size   = local.droplet.size
@@ -28,7 +28,7 @@ resource "digitalocean_droplet" "lotuscove" {
   }
 }
 
-resource "digitalocean_droplet" "lotuscove-test" {
+resource "digitalocean_droplet" "test" {
   count  = var.backup_id != null ? 1 : 0
   image  = var.backup_id
   region = local.region

@@ -1,14 +1,14 @@
-resource "digitalocean_project" "lotuscove" {
+resource "digitalocean_project" "minecraft" {
   name        = local.project
-  description = "Test environment for Lotus Cove"
+  description = "Minecraft on Digital Ocean"
   purpose     = "Shenanigans"
   environment = "Development"
   resources = concat(
     [
-      digitalocean_droplet.lotuscove.urn
+      digitalocean_droplet.prod.urn
     ],
     [
-      for droplet in digitalocean_droplet.lotuscove-test : droplet.id if length(digitalocean_droplet.lotuscove-test) > 0
+      for droplet in digitalocean_droplet.test : droplet.urn if length(digitalocean_droplet.test) > 0
     ]
   )
 }

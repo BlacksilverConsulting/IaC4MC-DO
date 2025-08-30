@@ -7,10 +7,10 @@ locals {
   port  = { all = "1-65535", ssh = "22", console = "8765", mc = "25611" }
 }
 
-resource "digitalocean_firewall" "lotuscove-prod" {
+resource "digitalocean_firewall" "prod" {
   name = "${local.project}-prod"
 
-  droplet_ids = [digitalocean_droplet.lotuscove.id]
+  droplet_ids = [digitalocean_droplet.prod.id]
 
   inbound_rule {
     protocol         = local.proto.tcp
@@ -43,11 +43,11 @@ resource "digitalocean_firewall" "lotuscove-prod" {
   }
 }
 
-resource "digitalocean_firewall" "lotuscove-test" {
+resource "digitalocean_firewall" "test" {
   count = var.backup_id != null ? 1 : 0
   name  = "${local.project}-test"
 
-  droplet_ids = [digitalocean_droplet.lotuscove-test[0].id]
+  droplet_ids = [digitalocean_droplet.test[0].id]
 
   inbound_rule {
     protocol         = local.proto.tcp
