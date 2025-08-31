@@ -1,0 +1,6 @@
+---
+console_name: "WebConsole"
+console_work_dir: "/tmp"
+console_html_dir: "/var/www/html"
+console_client_file: "client-v2.8.zip"
+console_httpd_user: "apache"

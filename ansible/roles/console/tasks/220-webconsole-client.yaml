@@ -1,0 +1,46 @@
+---
+- name: Download Spigot WebConsole client
+  ansible.builtin.get_url:
+    url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/{{ console_client_file }}"
+    dest: "{{ console_work_dir }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+
+- name: Install EPEL
+  ansible.builtin.package:
+    name:
+      - unzip
+    state: present
+
+- name: Create directory for extraction
+  ansible.builtin.tempfile:
+    state: directory
+  register: temp_dir
+
+- name: Extract client files
+  ansible.builtin.unarchive:
+    src: "{{ console_work_dir }}/{{ console_client_file }}"
+    dest: "{{ temp_dir.path }}"
+    remote_src: true
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_user }}"
+
+- name: Install client
+  ansible.builtin.copy:
+    src: "{{ temp_dir.path }}/dist/web-console-client/"
+    dest: "{{ console_html_dir }}"
+    remote_src: true
+    owner: "{{ console_httpd_user }}"
+    group: "{{ console_httpd_user }}"
+    mode: "0644"
+    selevel: s0
+    serole: object_r
+    setype: httpd_sys_content_t
+    seuser: system_u
+  notify: Restart httpd
+
+- name: Remove temp dir
+  ansible.builtin.file:
+    path: "{{ temp_dir.path }}"
+    state: absent

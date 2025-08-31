@@ -1,3 +1,9 @@
 ---
 - name: Base Apache httpd install
   ansible.builtin.include_tasks: 200-apache.yaml
+
+- name: WebConsole plugin install
+  ansible.builtin.include_tasks: 210-webconsole-plugin.yaml
+
+- name: WebConsole client install
+  ansible.builtin.include_tasks: 220-webconsole-client.yaml

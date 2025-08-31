@@ -1,5 +1,12 @@
 ---
+- name: Restart Minecraft
+  ansible.builtin.systemd:
+    name: minecraft
+    state: restarted
+    enabled: true
+
 - name: Restart httpd
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: httpd
     state: restarted
+    enabled: true

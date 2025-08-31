@@ -1,0 +1,26 @@
+---
+- name: Download Spigot WebConsole plugin
+  ansible.builtin.get_url:
+    url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/WebConsole-2.8.jar"
+    dest: "{{ minecraft_server_dir }}/plugins/{{ console_name }}.jar"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+  register: download_webconsole
+
+- name: Restart minecraft if plugin was downloaded
+  ansible.builtin.systemd:
+    name: minecraft
+    state: restarted
+    enabled: true
+  when: download_webconsole.changed # noqa: no-handler
+  # ^^^ This can't be a handler, because it needs to happen
+  # BEFORE the next task if the plugin was just installed,
+  # or else the configuration file won't exist!
+
+- name: Configure WebConsole plugin
+  ansible.builtin.lineinfile:
+    path: "{{ minecraft_server_dir }}/plugins/{{ console_name }}/config.yml"
+    regexp: "^port: 8080$"
+    line: "port: 8765"
+  notify: Restart Minecraft
