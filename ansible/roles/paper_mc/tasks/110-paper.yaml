@@ -19,7 +19,7 @@
     path: "{{ minecraft_server_dir }}"
   register: paper_mc_server_dir
 
-- name: Create Minecraft server directory
+- name: Minecraft server directory
   ansible.builtin.file:
     path: "{{ minecraft_server_dir }}"
     state: directory
@@ -28,6 +28,15 @@
     mode: "0755"
     recurse: true
   when: not paper_mc_server_dir.stat.exists
+
+- name: Plugins directory
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}/plugins"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0755"
+    recurse: true
 
 - name: Download PaperMC server JAR
   ansible.builtin.get_url:
