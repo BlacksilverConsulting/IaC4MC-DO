@@ -17,7 +17,7 @@
 - name: Check for Minecraft server directory
   ansible.builtin.stat:
     path: "{{ minecraft_server_dir }}"
-  register: server_dir
+  register: paper_mc_server_dir
 
 - name: Create Minecraft server directory
   ansible.builtin.file:
@@ -27,7 +27,7 @@
     group: "{{ minecraft_group }}"
     mode: "0755"
     recurse: true
-  when: not server_dir.stat.exists
+  when: not paper_mc_server_dir.stat.exists
 
 - name: Download PaperMC server JAR
   ansible.builtin.get_url:

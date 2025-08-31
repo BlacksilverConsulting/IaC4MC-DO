@@ -10,7 +10,7 @@
 - name: Check if the directory exists
   ansible.builtin.stat:
     path: "{{ linux_coredumpdir }}"
-  register: coredumpdir_stat
+  register: linux_coredumpdir
 
 - name: Create directory if needed
   ansible.builtin.file:
@@ -19,7 +19,7 @@
     mode: "0644"
     owner: root
     group: root
-  when: not coredumpdir_stat.stat.exists
+  when: not linux_coredumpdir.stat.exists
 
 - name: Create nodump.conf and set coredump options
   community.general.ini_file:

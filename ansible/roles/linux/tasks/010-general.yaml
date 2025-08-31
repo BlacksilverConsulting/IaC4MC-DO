@@ -29,11 +29,11 @@
 - name: Check if firewalld service unit file exists
   ansible.builtin.stat:
     path: /etc/systemd/system/multi-user.target.wants/firewalld.service
-  register: firewalld_unit_file
+  register: linux_firewalld_unit_file
 
 - name: Disable and stop firewalld if installed
   ansible.builtin.service:
     name: firewalld
     state: stopped
     enabled: false
-  when: firewalld_unit_file.stat.exists
+  when: linux_firewalld_unit_file.stat.exists
