@@ -4,7 +4,7 @@ locals {
     world   = ["0.0.0.0/0", "::/0"]
   }
   proto = { tcp = "tcp", udp = "udp", icmp = "icmp" }
-  port  = { all = "1-65535", ssh = "22", console = "8765", mc = "25611" }
+  port  = { all = "1-65535", ssh = "22", console = "8765", mc = "25611", http = 80 }
 }
 
 resource "digitalocean_firewall" "prod" {
@@ -26,8 +26,14 @@ resource "digitalocean_firewall" "prod" {
 
   inbound_rule {
     protocol         = local.proto.tcp
+    port_range       = local.port.http
+    source_addresses = local.addr.trusted
+  }
+
+  inbound_rule {
+    protocol         = local.proto.tcp
     port_range       = local.port.console
-    source_addresses = local.addr.world
+    source_addresses = local.addr.trusted
   }
 
   outbound_rule {
