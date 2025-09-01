@@ -7,7 +7,6 @@
       # https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars/EssentialsX-2.22.0-dev+18-7c89592.jar
       # https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars/EssentialsXSpawn-2.22.0-dev+18-7c89592.jar
 
-    plugins_dir: "{{ minecraft_server_dir }}/plugins"
     base: "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars"
 
   tasks:

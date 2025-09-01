@@ -2,25 +2,47 @@
 - name: Download Spigot WebConsole plugin
   ansible.builtin.get_url:
     url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/WebConsole-2.8.jar"
-    dest: "{{ minecraft_server_dir }}/plugins/{{ console_name }}.jar"
+    dest: "{{ plugins_dir }}/{{ console_name }}.jar"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
-  register: console_download
+  notify: Restart Minecraft
 
-- name: Restart minecraft if plugin was downloaded
-  ansible.builtin.systemd:
+- name: Plugins directory
+  ansible.builtin.file:
+    path: "{{ console_config_dir }}"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0755"
+  register: console_first_run
+
+- name: Force restart
+  ansible.builtin.service:
     name: minecraft
     state: restarted
-    enabled: true
-  when: console_download.changed # noqa: no-handler
-  # ^^^ This can't be a handler, because it needs to happen
-  # BEFORE the next task if the plugin was just installed,
-  # or else the configuration file won't exist!
+  when: console_first_run.changed # noqa: no-handler
+  # This needs to not be a handler because the
+  # restart is required now, not at the end of
+  # the playbook, so that WebConsole can make
+  # its default config file for us to replace
 
-- name: Configure WebConsole plugin
+- name: Fetch console passwords
+  ansible.builtin.set_fact:
+    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault='ify2elut7a2h2sc5azlpscwbfq', field='notesPlain') }}"
+
+- name: WebConsole configuration file from template
+  ansible.builtin.template:
+    src: "{{ console_name }}.config.yml.j2"
+    dest: "{{ console_config_dir }}/config.yml"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+  notify: Restart Minecraft
+
+- name: Configure WebConsole port
   ansible.builtin.lineinfile:
-    path: "{{ minecraft_server_dir }}/plugins/{{ console_name }}/config.yml"
+    path: "{{ console_config_dir }}/config.yml"
     regexp: "^port: 8080$"
     line: "port: 8765"
   notify: Restart Minecraft

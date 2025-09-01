@@ -31,7 +31,7 @@
 
 - name: Plugins directory
   ansible.builtin.file:
-    path: "{{ minecraft_server_dir }}/plugins"
+    path: "{{ plugins_dir }}"
     state: directory
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
