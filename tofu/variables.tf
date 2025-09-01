@@ -5,3 +5,9 @@ variable "backup_id" {
   type        = any
   default     = null
 }
+
+variable "op_connect_token" {
+  description = "Access token for 1Password Connect"
+  type        = string
+  sensitive   = true
+}

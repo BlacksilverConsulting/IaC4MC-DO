@@ -23,6 +23,7 @@ minecraft_group: "{{ minecraft_user }}"
 minecraft_server_root: "/opt/minecraft"
 minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
 minecraft_propfile: "server.properties"
+plugins_dir: "{{ minecraft_server_dir }}/plugins"
 dns_name: "lc.blacksilver.org"
 EOF
 
@@ -34,7 +35,7 @@ EOF
 
 resource "local_file" "host_vars" {
   filename = "${path.module}/../ansible/host_vars/${local.project}"
-  content = <<EOF
+  content  = <<EOF
 server_port: "${local.port.mc}"
 EOF
 

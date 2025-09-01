@@ -1,6 +1,6 @@
 provider "onepassword" {
-  account     = "my.1password.com"
-  op_cli_path = "/usr/local/bin/op"
+  url   = "http://localhost:8080"
+  token = var.op_connect_token
 }
 
 provider "digitalocean" {
