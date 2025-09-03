@@ -10,6 +10,7 @@
     name:
       - vim
       - lynx
+      - unzip
     state: present
 
 - name: ED25519 keypair for root

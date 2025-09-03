@@ -7,12 +7,6 @@
     group: "{{ minecraft_group }}"
     mode: "0644"
 
-- name: Install EPEL
-  ansible.builtin.package:
-    name:
-      - unzip
-    state: present
-
 - name: Create directory for extraction
   ansible.builtin.tempfile:
     state: directory
@@ -39,6 +33,16 @@
     setype: httpd_sys_content_t
     seuser: system_u
   notify: Restart httpd
+
+- name: Set permissions on web root
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    owner: apache
+    group: apache
+    mode: '0755'
+    setype: httpd_sys_content_t
+    recurse: true
 
 - name: Remove temp dir
   ansible.builtin.file:

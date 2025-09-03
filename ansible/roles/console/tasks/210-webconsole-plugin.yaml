@@ -1,31 +1,54 @@
 ---
-- name: Download Spigot WebConsole plugin
+
+- name: Stop minecraft service before installing plugin
+  ansible.builtin.service:
+    name: minecraft
+    state: stopped
+
+- name: Download plugin
+  # Why are we downloading after stopping?
+  # Because we are downloading directly to the plugins/ directory.
   ansible.builtin.get_url:
     url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/WebConsole-2.8.jar"
     dest: "{{ plugins_dir }}/{{ console_name }}.jar"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
-  notify: Restart Minecraft
 
-- name: Plugins directory
-  ansible.builtin.file:
-    path: "{{ console_config_dir }}"
-    state: directory
-    owner: "{{ minecraft_user }}"
-    group: "{{ minecraft_group }}"
-    mode: "0755"
-  register: console_first_run
-
-- name: Force restart
+- name: Start minecraft service after installing plugin
   ansible.builtin.service:
     name: minecraft
     state: restarted
-  when: console_first_run.changed # noqa: no-handler
-  # This needs to not be a handler because the
-  # restart is required now, not at the end of
-  # the playbook, so that WebConsole can make
-  # its default config file for us to replace
+
+- name: Wait for server to come up after plugin install
+  ansible.builtin.wait_for:
+    port: "{{ server_port }}"
+    state: started
+    timeout: "{{ startup_timeout }}"
+  register: console_restart_1
+
+- name: Check startup result after plugin install
+  ansible.builtin.fail:
+    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
+  when: not console_restart_1.elapsed
+
+- name: Check for plugin config file
+  ansible.builtin.stat:
+    path: "{{ console_config_dir }}/config.yml"
+  register: console_config_file
+
+- name: Fail if no config file
+  ansible.builtin.fail:
+    msg: "Plugin configuration file not found"
+  when: not console_config_file.stat.exists
+
+- name: Stop minecraft service before configuring plugin
+  # Why are we stopping, just to immediately start again?
+  # Plugins need to be started to set themselves up before
+  # we can configure them.
+  ansible.builtin.service:
+    name: minecraft
+    state: stopped
 
 - name: Fetch console passwords
   ansible.builtin.set_fact:
@@ -38,11 +61,38 @@
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
-  notify: Restart Minecraft
 
 - name: Configure WebConsole port
   ansible.builtin.lineinfile:
     path: "{{ console_config_dir }}/config.yml"
     regexp: "^port: 8080$"
     line: "port: 8765"
-  notify: Restart Minecraft
+
+- name: Start minecraft service after installing plugin
+  ansible.builtin.service:
+    name: minecraft
+    state: restarted
+
+- name: Wait for server to come up after plugin config
+  ansible.builtin.wait_for:
+    port: "{{ server_port }}"
+    state: started
+    timeout: "{{ startup_timeout }}"
+  register: console_restart_2
+
+- name: Check startup result after plugin config
+  ansible.builtin.fail:
+    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
+  when: not console_restart_2.elapsed
+
+- name: Check for WebConsole open port
+  ansible.builtin.wait_for:
+    port: "{{ console_port }}"
+    state: started
+    timeout: 5
+  register: console_port_status
+
+- name: Check startup result after plugin config
+  ansible.builtin.fail:
+    msg: "The WebConsole plugin is not listening on port {{ console_port }}"
+  when: not console_port_status.elapsed
