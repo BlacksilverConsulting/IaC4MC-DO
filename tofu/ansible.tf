@@ -2,7 +2,7 @@ resource "local_file" "ansible_inventory" {
   filename = "${path.module}/../ansible/hosts"
   content  = <<EOF
 [minecraft]
-${local.project} ansible_host=${digitalocean_droplet.prod.ipv4_address}
+${local.project} ansible_host=${digitalocean_record.minecraft_a.fqdn}
 ${var.backup_id != null ? "${local.project}-test ansible_host=${digitalocean_droplet.test[0].ipv4_address}" : ""}
 EOF
 

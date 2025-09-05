@@ -4,7 +4,7 @@ locals {
   # Locals that are only used in one file are in that file!
 
   project = "lotuscove"
-  domain  = "lc.blacksilverconsulting.com"
+  domain  = "lotuscovetest.org"
   ttl     = 1800
   region  = "nyc3"
   uniq    = "25611"
