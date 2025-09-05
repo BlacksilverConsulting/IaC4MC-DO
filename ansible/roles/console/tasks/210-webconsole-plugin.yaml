@@ -52,7 +52,7 @@
 
 - name: Fetch console passwords
   ansible.builtin.set_fact:
-    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault='ify2elut7a2h2sc5azlpscwbfq', field='notesPlain') }}"
+    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault=lookup( 'env', 'OP_VAULT' ), field='notesPlain') }}"
 
 - name: WebConsole configuration file from template
   ansible.builtin.template:
@@ -62,13 +62,7 @@
     group: "{{ minecraft_group }}"
     mode: "0644"
 
-- name: Configure WebConsole port
-  ansible.builtin.lineinfile:
-    path: "{{ console_config_dir }}/config.yml"
-    regexp: "^port: 8080$"
-    line: "port: 8765"
-
-- name: Start minecraft service after installing plugin
+- name: Start minecraft service after configuring plugin
   ansible.builtin.service:
     name: minecraft
     state: restarted

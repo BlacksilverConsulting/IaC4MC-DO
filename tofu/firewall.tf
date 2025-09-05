@@ -4,7 +4,7 @@ locals {
     world   = ["0.0.0.0/0", "::/0"]
   }
   proto = { tcp = "tcp", udp = "udp", icmp = "icmp" }
-  port  = { all = "1-65535", ssh = "22", console = "8765", mc = "25611", http = 80 }
+  port  = { all = "1-65535", ssh = "22", console = "8080", mc = "25611", http = 80 }
 }
 
 resource "digitalocean_firewall" "prod" {
