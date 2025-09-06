@@ -1,8 +1,4 @@
 
-locals {
-  op_vault_id = "ify2elut7a2h2sc5azlpscwbfq"
-}
-
 data "onepassword_item" "do_token" {
   vault = local.op_vault_id
   title = "Digital Ocean Full Access"
