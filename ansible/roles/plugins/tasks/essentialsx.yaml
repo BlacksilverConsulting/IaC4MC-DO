@@ -1,0 +1,83 @@
+---
+
+- name: Create directory for extraction
+  ansible.builtin.tempfile:
+    state: directory
+  register: plugins_temp_dir
+
+- name: Download EssentialsX Complete Zip
+  ansible.builtin.get_url:
+    url: "{{ plugins_ess_url }}"
+    dest: "{{ plugins_temp_dir.path }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+
+- name: Extract client files
+  ansible.builtin.unarchive:
+    src: "{{ plugins_temp_dir.path }}/jars.zip"
+    dest: "{{ plugins_temp_dir.path }}"
+    remote_src: true
+      #     owner: "{{ minecraft_user }}"
+      #     group: "{{ minecraft_user }}"
+
+- name: Select EssentialsX core file
+  ansible.builtin.find:
+    paths: "{{ plugins_temp_dir.path }}/jars"
+    patterns: "EssentialsX-*.jar"
+  register: plugins_found_core
+
+- name: Copy EssentialsX core file
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ item.path }}"
+    dest: "{{ plugins_dir }}/EssentialsX.jar"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_user }}"
+    mode: "0644"
+  with_items: "{{ plugins_found_core.files }}"
+  when: plugins_found_core.matched > 0
+
+- name: Select EssentialsXSpawn file
+  ansible.builtin.find:
+    paths: "{{ plugins_temp_dir.path }}/jars"
+    patterns: "EssentialsXSpawn*.jar"
+  register: plugins_found_spawn
+
+- name: Copy EssentialsXSpawn file
+  ansible.builtin.copy:
+    remote_src: true
+    src: "{{ item.path }}"
+    dest: "{{ plugins_dir }}/EssentialsXSpawn.jar"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_user }}"
+    mode: "0644"
+  with_items: "{{ plugins_found_spawn.files }}"
+  when: plugins_found_spawn.matched > 0
+
+- name: Start minecraft service after installing plugin
+  ansible.builtin.service:
+    name: minecraft
+    state: restarted
+
+- name: Wait for server to come up after plugin install
+  ansible.builtin.wait_for:
+    port: "{{ server_port }}"
+    state: started
+    timeout: "{{ startup_timeout }}"
+  register: plugins_restart_1
+
+- name: Check startup result after plugin install
+  ansible.builtin.fail:
+    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
+  when: not plugins_restart_1.elapsed
+
+- name: Check for plugin config file
+  ansible.builtin.stat:
+    path: "{{ plugins_dir }}/Essentials/config.yml"
+  register: plugins_config_file
+
+- name: Fail if no config file
+  ansible.builtin.fail:
+    msg: "Plugin configuration file not found"
+  when: not plugins_config_file.stat.exists
