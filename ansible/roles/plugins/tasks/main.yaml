@@ -1,3 +1,6 @@
 ---
 - name: EssentialsX and EssentialsXSpawn
   ansible.builtin.include_tasks: essentialsx.yaml
+
+- name: TAB
+  ansible.builtin.include_tasks: tab.yaml
