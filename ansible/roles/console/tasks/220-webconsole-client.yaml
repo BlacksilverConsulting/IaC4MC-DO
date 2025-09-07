@@ -40,7 +40,7 @@
     state: directory
     owner: apache
     group: apache
-    mode: '0755'
+    mode: "0755"
     setype: httpd_sys_content_t
     recurse: true
 

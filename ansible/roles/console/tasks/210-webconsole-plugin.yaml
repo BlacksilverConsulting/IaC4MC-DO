@@ -1,5 +1,4 @@
 ---
-
 - name: Stop minecraft service before installing plugin
   ansible.builtin.service:
     name: minecraft
@@ -52,7 +51,7 @@
 
 - name: Fetch console passwords
   ansible.builtin.set_fact:
-    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault=lookup( 'env', 'OP_VAULT' ), field='notesPlain') }}"
+    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault=lookup('env', 'TF_VAR_vault'), field='notesPlain') }}"
 
 - name: WebConsole configuration file from template
   ansible.builtin.template:
@@ -83,7 +82,7 @@
   ansible.builtin.wait_for:
     port: "{{ console_port }}"
     state: started
-    timeout: 5
+    timeout: "{{ startup_timeout }}"
   register: console_port_status
 
 - name: Check startup result after plugin config
