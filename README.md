@@ -18,11 +18,11 @@ I am assuming a modicum of Linux and shell knowledge. Support is available for U
 
 # Environment variables
 
-| `OP_VAULT` | Your OnePassword Vault ID |
+| `TF_VAR_vault` | Your OnePassword Vault ID |
+| `TF_VAR_op_connect_token` | Another copy of the OnePassword Connect token |
 | `ITEM` | The name of the OnePassword item containing your DigitalOcean Spaces Access Key (with the access key ID in the username field, and the secret access key in the password field ) |
 | `OP_CONNECT_HOST` | The URL of the local OnePassword Connect server, probably `http://localhost:8080/` |
 | `OP_CONNECT_TOKEN` | The OnePassword Connect token |
-| `TF_VAR_op_connect_token` | Another copy of the OnePassword Connect token |
 
 # TODO
 - Explain bootstrap

@@ -1,3 +1,9 @@
+variable "op_connect_token" {
+  description = "Access token for 1Password Connect"
+  type        = string
+  sensitive   = true
+}
+
 provider "onepassword" {
   url   = "http://localhost:8080"
   token = var.op_connect_token
