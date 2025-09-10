@@ -25,7 +25,7 @@ minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
 minecraft_propfile: "server.properties"
 plugins_dir: "{{ minecraft_server_dir }}/plugins"
 dns_name: "${digitalocean_record.minecraft_a.fqdn}"
-startup_timeout: 30
+startup_timeout: 60
 EOF
 
   depends_on = [
