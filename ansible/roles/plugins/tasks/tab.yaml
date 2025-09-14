@@ -30,13 +30,3 @@
   ansible.builtin.fail:
     msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
   when: not plugins_restart_1.elapsed
-
-- name: Check for plugin config file
-  ansible.builtin.stat:
-    path: "{{ console_config_dir }}/config.yml"
-  register: plugins_config_file
-
-- name: Fail if no config file
-  ansible.builtin.fail:
-    msg: "Plugin configuration file not found"
-  when: not plugins_config_file.stat.exists

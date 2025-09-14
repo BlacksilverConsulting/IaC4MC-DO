@@ -1,0 +1,31 @@
+---
+
+- name: Set plugin name
+  ansible.builtin.set_fact:
+    plugins_name: "FIXME"
+
+- name: "Stop minecraft service before installing {{ plugins_name }}"
+  ansible.builtin.service:
+    name: minecraft
+    state: stopped
+
+- name: "FIXME: INSTALL PLACEHOLDER FOR {{ plugins_name }}"
+  ansible.builtin.debug:
+    msg: "The install for {{ plugins_name }} goes here!"
+
+- name: "Start minecraft service after installing {{ plugins_name }}"
+  ansible.builtin.service:
+    name: minecraft
+    state: restarted
+
+- name: "Post-install wait for server to come up after {{ plugins_name }}"
+  ansible.builtin.wait_for:
+    port: "{{ server_port }}"
+    state: started
+    timeout: "{{ startup_timeout }}"
+  register: plugins_restart
+
+- name: "Check startup result after installing {{ plugins_name }}"
+  ansible.builtin.fail:
+    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
+  when: not plugins_restart.elapsed

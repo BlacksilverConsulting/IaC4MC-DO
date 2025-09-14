@@ -32,7 +32,6 @@
     serole: object_r
     setype: httpd_sys_content_t
     seuser: system_u
-  notify: Restart httpd
 
 - name: Set permissions on web root
   ansible.builtin.file:
@@ -43,6 +42,12 @@
     mode: "0755"
     setype: httpd_sys_content_t
     recurse: true
+
+- name: Restart httpd
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+    enabled: true
 
 - name: Remove temp dir
   ansible.builtin.file:

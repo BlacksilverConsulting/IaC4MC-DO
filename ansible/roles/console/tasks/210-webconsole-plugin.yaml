@@ -31,53 +31,6 @@
     msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
   when: not console_restart_1.elapsed
 
-- name: Check for plugin config file
-  ansible.builtin.stat:
-    path: "{{ console_config_dir }}/config.yml"
-  register: console_config_file
-
-- name: Fail if no config file
-  ansible.builtin.fail:
-    msg: "Plugin configuration file not found"
-  when: not console_config_file.stat.exists
-
-- name: Stop minecraft service before configuring plugin
-  # Why are we stopping, just to immediately start again?
-  # Plugins need to be started to set themselves up before
-  # we can configure them.
-  ansible.builtin.service:
-    name: minecraft
-    state: stopped
-
-- name: Fetch console passwords
-  ansible.builtin.set_fact:
-    console_passwords: "{{ lookup('community.general.onepassword', 'Web Console Passwords', vault=lookup('env', 'TF_VAR_vault'), field='notesPlain') }}"
-
-- name: WebConsole configuration file from template
-  ansible.builtin.template:
-    src: "{{ console_name }}.config.yml.j2"
-    dest: "{{ console_config_dir }}/config.yml"
-    owner: "{{ minecraft_user }}"
-    group: "{{ minecraft_group }}"
-    mode: "0644"
-
-- name: Start minecraft service after configuring plugin
-  ansible.builtin.service:
-    name: minecraft
-    state: restarted
-
-- name: Wait for server to come up after plugin config
-  ansible.builtin.wait_for:
-    port: "{{ server_port }}"
-    state: started
-    timeout: "{{ startup_timeout }}"
-  register: console_restart_2
-
-- name: Check startup result after plugin config
-  ansible.builtin.fail:
-    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
-  when: not console_restart_2.elapsed
-
 - name: Check for WebConsole open port
   ansible.builtin.wait_for:
     port: "{{ console_port }}"

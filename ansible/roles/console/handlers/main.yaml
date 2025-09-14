@@ -4,9 +4,3 @@
     name: minecraft
     state: restarted
     enabled: true
-
-- name: Restart httpd
-  ansible.builtin.systemd:
-    name: httpd
-    state: restarted
-    enabled: true

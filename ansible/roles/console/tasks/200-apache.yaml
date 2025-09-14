@@ -8,7 +8,6 @@
       - certbot
       - certbot-apache
     state: present
-  notify: Restart httpd
 
 - name: Set ServerName
   ansible.builtin.lineinfile:
@@ -16,9 +15,9 @@
     regexp: "^ServerName"
     line: "ServerName {{ dns_name }}"
     state: present
-  notify: Restart httpd
 
 - name: Start / enable httpd
   ansible.builtin.service:
     name: httpd
+    state: restarted
     enabled: true

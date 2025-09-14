@@ -4,3 +4,6 @@
 
 - name: TAB
   ansible.builtin.include_tasks: tab.yaml
+
+# Adding to this list? Start by copying plugin_example.yaml
+# to get service stop/start/test for free!
