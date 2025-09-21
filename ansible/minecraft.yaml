@@ -7,4 +7,4 @@
     - paper_mc
     - console
     - plugins
-    - plugin_config
+      #    - plugin_config
