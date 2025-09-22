@@ -56,6 +56,8 @@
     state: link
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
+  become: true
+  become_user: minecraft
 
 - name: Install server.properties from template
   ansible.builtin.template:
