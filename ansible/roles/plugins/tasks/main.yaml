@@ -11,6 +11,9 @@
 - name: TAB Config
   ansible.builtin.include_tasks: tab-config.yaml
 
+- name: LuckPerms
+  ansible.builtin.include_tasks: luckperms.yaml
+
 # Adding to this list? Start by copying plugin_example.yaml
 # to get service stop/start/test for free!
 #
