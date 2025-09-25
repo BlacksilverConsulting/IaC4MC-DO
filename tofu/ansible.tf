@@ -18,14 +18,7 @@ resource "local_file" "group_vars" {
   content  = <<EOF
 console_port: "${local.port.console}"
 project: "${local.project}"
-minecraft_user: "minecraft"
-minecraft_group: "{{ minecraft_user }}"
-minecraft_server_root: "/opt/minecraft"
-minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
-minecraft_propfile: "server.properties"
-plugins_dir: "{{ minecraft_server_dir }}/plugins"
 dns_name: "${digitalocean_record.minecraft_a.fqdn}"
-startup_timeout: 60
 EOF
 
   depends_on = [

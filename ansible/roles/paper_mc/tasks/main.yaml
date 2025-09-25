@@ -7,3 +7,6 @@
 
 - name: Create systemd service unit
   ansible.builtin.include_tasks: 120-systemd.yaml
+
+- name: Set up download cache
+  ansible.builtin.include_tasks: 130-dl_cache.yaml

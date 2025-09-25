@@ -2,9 +2,17 @@
 - name: Minecraft Servers
   hosts: minecraft
   become: true
+  vars:
+    minecraft_user: "minecraft"
+    minecraft_group: "{{ minecraft_user }}"
+    minecraft_server_root: "/opt/minecraft"
+    minecraft_server_dir: "{{ minecraft_server_root }}/{{ project }}"
+    minecraft_propfile: "server.properties"
+    plugins_dir: "{{ minecraft_server_dir }}/plugins"
+    startup_timeout: 60
+    plugins_download_cache_path: "{{ minecraft_server_dir }}/.download_cache"
   roles:
     - linux
     - paper_mc
     - console
     - plugins
-      #    - plugin_config
