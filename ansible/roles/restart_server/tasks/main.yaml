@@ -1,24 +1,25 @@
 ---
-- name: Stop minecraft service before configuring plugins
+# This is the CALLABLE server restart role.
+# Use this freely instead of repeating these tasks everywhere!
+
+- name: "Stop minecraft service"
   ansible.builtin.service:
     name: minecraft
     state: stopped
 
-# Configuere ALL the plugins here
-
-- name: Start minecraft service after configuring plugins
+- name: "Restart minecraft service"
   ansible.builtin.service:
     name: minecraft
     state: restarted
 
-- name: Wait for server to come up after plugin config
+- name: "Wait for server to come up after restart"
   ansible.builtin.wait_for:
     port: "{{ server_port }}"
     state: started
     timeout: "{{ startup_timeout }}"
-  register: plugin_config_restart
+  register: restart_server_wait
 
-- name: Check startup result after plugin config
+- name: "Check startup result after restart"
   ansible.builtin.fail:
     msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
-  when: not plugin_config_restart.elapsed
+  when: not restart_server_wait.elapsed

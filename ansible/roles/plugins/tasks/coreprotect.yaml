@@ -1,12 +1,15 @@
 ---
 - name: Set plugin name
   ansible.builtin.set_fact:
-    plugins_label: "LuckPerms"
+    plugins_label: "CoreProtect"
+    plugins_path: "plugins/CoreProtect"
 
 - name: "Download {{ plugins_label }}"
+  # Why are we downloading after stopping?
+  # Because we are downloading directly to the plugins/ directory.
   ansible.builtin.get_url:
-    url: "https://download.luckperms.net/1596/bukkit/loader/LuckPerms-Bukkit-5.5.11.jar"
-    dest: "{{ plugins_dir }}/LuckPerms.jar"
+    url: "https://www.patreon.com/file?h=136053027&m=513054290"
+    dest: "{{ plugins_dir }}/CoreProtect.jar"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
@@ -23,6 +26,14 @@
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     partial: true
     mode: "push"
+
+- name: "Copy license file for {{ plugins_label }}"
+  ansible.builtin.copy:
+    src: "../../big_lc/{{ plugins_path }}/.license"
+    dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_user }}"
+    mode: "0644"
 
 - name: "Reset config file ownership/permissions for {{ plugins_label }}"
   ansible.builtin.file:

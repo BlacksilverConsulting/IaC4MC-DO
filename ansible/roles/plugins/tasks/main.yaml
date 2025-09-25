@@ -8,22 +8,10 @@
 - name: TAB
   ansible.builtin.include_tasks: tab.yaml
 
-- name: TAB Config
-  ansible.builtin.include_tasks: tab-config.yaml
-
 - name: LuckPerms
   ansible.builtin.include_tasks: luckperms.yaml
 
-# Adding to this list? Start by copying plugin_example.yaml
-# to get service stop/start/test for free!
-#
-#
-# ### 2025-09-20 ###
-# Giving up on hand-installing each plugin and its configuration for now.
-# (1) some of them require payment to download
-# (2) Some of them require proof of humanity to download
-# (3) There are a lot of them and I want to get this working
-#
+- name: CoreProtect
+  ansible.builtin.include_tasks: coreprotect.yaml
 
-# - name: Cheap copy of old plugins dir
-#   ansible.builtin.include_tasks: justcopy.yml
+# Adding to this list? Start by copying plugin_example.yaml

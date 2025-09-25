@@ -1,9 +1,4 @@
 ---
-- name: Stop minecraft service before installing plugin
-  ansible.builtin.service:
-    name: minecraft
-    state: stopped
-
 - name: Download plugin
   # Why are we downloading after stopping?
   # Because we are downloading directly to the plugins/ directory.
@@ -14,22 +9,9 @@
     group: "{{ minecraft_group }}"
     mode: "0644"
 
-- name: Start minecraft service after installing plugin
-  ansible.builtin.service:
-    name: minecraft
-    state: restarted
-
-- name: Wait for server to come up after plugin install
-  ansible.builtin.wait_for:
-    port: "{{ server_port }}"
-    state: started
-    timeout: "{{ startup_timeout }}"
-  register: console_restart_1
-
-- name: Check startup result after plugin install
-  ansible.builtin.fail:
-    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
-  when: not console_restart_1.elapsed
+- name: Restart Minecraft
+  ansible.builtin.include_role:
+    name: restart_server
 
 - name: Check for WebConsole open port
   ansible.builtin.wait_for:

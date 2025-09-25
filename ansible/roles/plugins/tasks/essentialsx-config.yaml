@@ -27,6 +27,15 @@
     state: "directory"
     recurse: true
 
+- name: "Reset config file ownership/permissions for {{ plugins_name }}"
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}/{{ plugins_path }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0744"
+    state: "directory"
+    recurse: false
+
 - name: "Start minecraft service after installing {{ plugins_name }}"
   ansible.builtin.service:
     name: minecraft
