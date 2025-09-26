@@ -1,5 +1,4 @@
 ---
-
 - name: Set plugin name
   ansible.builtin.set_fact:
     plugins_label: "FIXME"

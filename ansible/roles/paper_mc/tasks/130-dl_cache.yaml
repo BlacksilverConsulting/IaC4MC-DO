@@ -1,5 +1,4 @@
 ---
-
 # Set up the plugin download cache so we can skip
 # re-installing plugins that haven't changed. (The
 # download time isn't the problem, it's the service

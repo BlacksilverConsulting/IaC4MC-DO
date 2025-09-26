@@ -1,0 +1,59 @@
+---
+# This role expects the following facts/vars to be set:
+# plugin_name: "foo" --> plugins/foo.jar
+# plugin_url: "https://plugins.net/path/foo-1.2.3.jar"
+# plugins_download_cache_path: A writeable, persistent directory on the target
+#   that already exists
+# plugins_dir: The directory where plugins go to be part of the server
+
+- name: "Cache slot for {{ plugin_name }}"
+  ansible.builtin.set_fact:
+    pluginst_cache_file: "{{ plugins_download_cachee_path }}/{{ plugin_name }}.jar"
+    pluginst_live_file: "{{ plugins_dir }}/{{ plugin_name }}.jar"
+
+# It would be nice to not download every time,
+# but that is a future problem.
+- name: "Download {{ plugin_name }}"
+  ansible.builtin.get_url:
+    url: "{{ plugin_url }}"
+    dest: "{{ pluginst_cache_file }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+
+- name: "Stat {{ pluginst_cache_file }}"
+  ansible.builtin.stat:
+    path: "{{ pluginst_cache_file }}"
+  register: pluginst_cache_stat
+
+- name: "Bail if not found {{ pluginst_cache_file }}"
+  ansible.builtin.fail:
+    msg: "Stat did not find plugin file in cache after download"
+  when: not pluginst_cache_stat.stat.exists
+
+- name: "Get checksum of {{ pluginst_cache_file }}"
+  ansible.builtin.set_fact:
+    pluginst_cache_sum: "{{ pluginst_cache_stat.stat.checksum }}"
+
+- name: "Stat {{ pluginst_live_file }}"
+  ansible.builtin.stat:
+    path: "{{ pluginst_live_file }}"
+  register: pluginst_live_stat
+
+- name: "Get checksum of {{ pluginst_live_file }}"
+  ansible.builtin.set_fact:
+    pluginst_live_sum: "{{ pluginst_live_stat.stat.checksum if pluginst_live_stat.stat.exists else 'not found' }}"
+
+- name: "Install {{ pluginst_live_file }}"
+  ansible.builtin.copy:
+    src: "{{ pluginst_cache_file }}"
+    dest: "{{ pluginst_live_file }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+  when: pluginst_cache_sum != pluginst_live_sum
+
+- name: "Restart server after installing {{ plugin_name }}"
+  ansible.builtin.include_role:
+    name: restart_server
+  when: pluginst_cache_sum != pluginst_live_sum
