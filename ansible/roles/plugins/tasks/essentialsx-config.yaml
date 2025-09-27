@@ -17,6 +17,7 @@
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     partial: true
     mode: "push"
+  register: plugins_ess_config
 
 - name: "Reset config file ownership/permissions for {{ plugins_name }}"
   ansible.builtin.file:
@@ -36,19 +37,9 @@
     state: "directory"
     recurse: false
 
-- name: "Start minecraft service after installing {{ plugins_name }}"
-  ansible.builtin.service:
-    name: minecraft
-    state: restarted
-
-- name: "Post-install wait for server to come up after {{ plugins_name }}"
-  ansible.builtin.wait_for:
-    port: "{{ server_port }}"
-    state: started
-    timeout: "{{ startup_timeout }}"
-  register: plugins_restart
-
-- name: "Check startup result after installing {{ plugins_name }}"
-  ansible.builtin.fail:
-    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
-  when: not plugins_restart.elapsed
+- name: "Restart after configuring {{ plugins_name }}"
+  ansible.builtin.include_role:
+    name: restart_server
+  when: plugins_ess_config.changed # noqa: no-handler
+    # This (^^^) can't be a handler because the restart has to
+    # happen before the next plugin is installed.

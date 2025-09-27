@@ -3,17 +3,12 @@
   ansible.builtin.set_fact:
     plugins_label: "LuckPerms"
 
-- name: "Download {{ plugins_label }}"
-  ansible.builtin.get_url:
-    url: "https://download.luckperms.net/1596/bukkit/loader/LuckPerms-Bukkit-5.5.11.jar"
-    dest: "{{ plugins_dir }}/LuckPerms.jar"
-    owner: "{{ minecraft_user }}"
-    group: "{{ minecraft_group }}"
-    mode: "0644"
-
-- name: "Restart minecraft service after installing {{ plugins_label }}"
+- name: "Install {{ plugins_label }}"
   ansible.builtin.include_role:
-    name: restart_server
+    name: pluginst
+  vars:
+    pluginst_name: luckperms
+    pluginst_url: "https://download.luckperms.net/1596/bukkit/loader/LuckPerms-Bukkit-5.5.11.jar"
 
 - name: "Copy configuration files for {{ plugins_label }}"
   ansible.posix.synchronize:
@@ -23,6 +18,7 @@
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     partial: true
     mode: "push"
+  register: plugins_luckperms_config
 
 - name: "Reset config file ownership/permissions for {{ plugins_label }}"
   ansible.builtin.file:
@@ -45,3 +41,6 @@
 - name: "Restart minecraft service after configuring {{ plugins_label }}"
   ansible.builtin.include_role:
     name: restart_server
+  when: plugins_luckperms_config.changed # noqa: no-handler
+    # This (^^^) can't be a handler because the restart has to
+    # happen before the next plugin is installed.
