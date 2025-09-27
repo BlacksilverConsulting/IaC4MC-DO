@@ -2,18 +2,11 @@
 - name: Install WebConsole plugin
   ansible.builtin.include_role:
     name: pluginst
-    vars:
-      plugin_name: "WebConsole"
-      plugin_url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/WebConsole-2.8.jar"
+  vars:
+    pluginst_name: "WebConsole"
+    pluginst_url: "https://github.com/mesacarlos/WebConsole/releases/download/v2.8/WebConsole-2.8.jar"
 
 - name: Check for WebConsole open port
   ansible.builtin.wait_for:
     port: "{{ console_port }}"
-    state: started
     timeout: "{{ startup_timeout }}"
-  register: console_port_status
-
-- name: Check startup result after plugin config
-  ansible.builtin.fail:
-    msg: "The WebConsole plugin is not listening on port {{ console_port }}"
-  when: not console_port_status.elapsed

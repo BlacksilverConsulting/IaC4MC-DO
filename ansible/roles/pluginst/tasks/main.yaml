@@ -1,21 +1,21 @@
 ---
 # This role expects the following facts/vars to be set:
-# plugin_name: "foo" --> plugins/foo.jar
-# plugin_url: "https://plugins.net/path/foo-1.2.3.jar"
+# pluginst_name: "foo" --> plugins/foo.jar
+# pluginst_url: "https://plugins.net/path/foo-1.2.3.jar"
 # plugins_download_cache_path: A writeable, persistent directory on the target
 #   that already exists
 # plugins_dir: The directory where plugins go to be part of the server
 
-- name: "Cache slot for {{ plugin_name }}"
+- name: "Cache slot for {{ pluginst_name }}"
   ansible.builtin.set_fact:
-    pluginst_cache_file: "{{ plugins_download_cachee_path }}/{{ plugin_name }}.jar"
-    pluginst_live_file: "{{ plugins_dir }}/{{ plugin_name }}.jar"
+    pluginst_cache_file: "{{ plugins_download_cache_path }}/{{ pluginst_name }}.jar"
+    pluginst_live_file: "{{ plugins_dir }}/{{ pluginst_name }}.jar"
 
 # It would be nice to not download every time,
 # but that is a future problem.
-- name: "Download {{ plugin_name }}"
+- name: "Download {{ pluginst_name }}"
   ansible.builtin.get_url:
-    url: "{{ plugin_url }}"
+    url: "{{ pluginst_url }}"
     dest: "{{ pluginst_cache_file }}"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
@@ -48,12 +48,13 @@
   ansible.builtin.copy:
     src: "{{ pluginst_cache_file }}"
     dest: "{{ pluginst_live_file }}"
+    remote_src: true
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
   when: pluginst_cache_sum != pluginst_live_sum
 
-- name: "Restart server after installing {{ plugin_name }}"
+- name: "Restart server after installing {{ pluginst_name }}"
   ansible.builtin.include_role:
     name: restart_server
   when: pluginst_cache_sum != pluginst_live_sum
