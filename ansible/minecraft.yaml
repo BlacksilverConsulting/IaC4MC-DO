@@ -15,4 +15,4 @@
     - linux
     - paper_mc
     - console
-      # TEMPORARY WHILE TESTING SIMPLE    - plugins
+    - plugins
