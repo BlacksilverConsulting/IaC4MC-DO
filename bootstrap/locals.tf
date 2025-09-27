@@ -5,7 +5,7 @@ locals {
 
   project = "lotuscove"
   domain  = "lotuscovetest.org"
-  ttl     = 1800
+  ttl     = 300
   region  = "nyc3"
   uniq    = "25611"
 
