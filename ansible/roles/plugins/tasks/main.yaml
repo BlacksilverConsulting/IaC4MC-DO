@@ -14,4 +14,9 @@
 - name: CoreProtect
   ansible.builtin.include_tasks: coreprotect.yaml
 
-# Adding to this list? Start by copying plugin_example.yaml
+- name: WorldEdit
+  ansible.builtin.include_tasks: worldedit.yaml
+
+    # WorldGuard download not working
+    # - name: WorldGuard
+    #   ansible.builtin.include_tasks: worldguard.yaml

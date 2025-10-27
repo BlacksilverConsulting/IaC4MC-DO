@@ -1,0 +1,61 @@
+---
+- name: Set plugin name
+  ansible.builtin.set_fact:
+    plugins_name: "WorldGuard"
+    plugins_path: "plugins/WorldGuard"
+
+- name: "Install {{ plugins_name }}"
+  ansible.builtin.include_role:
+    name: pluginst
+  vars:
+    pluginst_name: worldguard
+    pluginst_url: "https://dev.bukkit.org/projects/worldguard/files/6643567/download"
+
+- name: "Copy configuration files for {{ plugins_name }}"
+  ansible.posix.synchronize:
+    delete: true
+    recursive: true
+    src: "../../big_lc/{{ plugins_path }}"
+    dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
+    partial: true
+    mode: "push"
+  register: plugins_worldedit_config
+
+- name: "Reset config file ownership/permissions for {{ plugins_name }}"
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}/{{ plugins_path }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0644"
+    state: "directory"
+    recurse: true
+
+- name: "Reset config dir ownership/permissions for {{ plugins_name }}"
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}/{{ plugins_path }}"
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0744"
+    state: "directory"
+    recurse: false
+
+- name: Restart minecraft service after configuring plugin
+  ansible.builtin.include_role:
+    name: restart_server
+  when: plugins_worldedit_config.changed # noqa: no-handler
+    # This (^^^) can't be a handler because the restart has to
+    # happen before the next plugin is installed.
+
+- name: Set plugin name
+  ansible.builtin.set_fact:
+    plugins_name: "WorldGuardExtraFlags"
+    plugins_path: "plugins/WorldGuardExtraFlags"
+
+- name: "Install {{ plugins_name }}"
+  ansible.builtin.include_role:
+    name: pluginst
+  vars:
+    pluginst_name: worldguardextraflags
+    pluginst_url: "https://www.spigotmc.org/resources/worldguard-extra-flags.4823/download?version=545199"
+
+# WorldGuardExtraFlags does not have its own configuration files, so there is nothing to copy here.

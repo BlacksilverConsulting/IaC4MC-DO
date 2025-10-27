@@ -15,11 +15,4 @@
 - name: "Wait for server to come up after restart"
   ansible.builtin.wait_for:
     port: "{{ server_port }}"
-    state: started
     timeout: "{{ startup_timeout }}"
-  register: restart_server_wait
-
-- name: "Check startup result after restart"
-  ansible.builtin.fail:
-    msg: "The Minecraft service did not start within {{ startup_timeout }} seconds"
-  when: not restart_server_wait.elapsed

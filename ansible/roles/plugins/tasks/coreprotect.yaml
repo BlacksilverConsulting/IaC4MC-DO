@@ -4,19 +4,12 @@
     plugins_label: "CoreProtect"
     plugins_path: "plugins/CoreProtect"
 
-- name: "Download {{ plugins_label }}"
-  # Why are we downloading after stopping?
-  # Because we are downloading directly to the plugins/ directory.
-  ansible.builtin.get_url:
-    url: "https://www.patreon.com/file?h=136053027&m=513054290"
-    dest: "{{ plugins_dir }}/CoreProtect.jar"
-    owner: "{{ minecraft_user }}"
-    group: "{{ minecraft_group }}"
-    mode: "0644"
-
-- name: "Restart minecraft service after installing {{ plugins_label }}"
+- name: "Install {{ plugins_label }}"
   ansible.builtin.include_role:
-    name: restart_server
+    name: pluginst
+  vars:
+    pluginst_name: coreprotect
+    pluginst_url: "https://www.patreon.com/file?h=136053027&m=513054290"
 
 - name: "Copy configuration files for {{ plugins_label }}"
   ansible.posix.synchronize:
@@ -26,14 +19,16 @@
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     partial: true
     mode: "push"
+  register: plugins_core_sync
 
 - name: "Copy license file for {{ plugins_label }}"
   ansible.builtin.copy:
     src: "../../big_lc/{{ plugins_path }}/.license"
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     owner: "{{ minecraft_user }}"
-    group: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
     mode: "0644"
+  register: plugins_core_license
 
 - name: "Reset config file ownership/permissions for {{ plugins_label }}"
   ansible.builtin.file:
@@ -56,3 +51,4 @@
 - name: "Restart minecraft service after configuring {{ plugins_label }}"
   ansible.builtin.include_role:
     name: restart_server
+  when: plugins_core_sync.changed or plugins_core_license.changed

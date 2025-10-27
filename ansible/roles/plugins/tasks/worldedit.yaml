@@ -1,16 +1,18 @@
 ---
 - name: Set plugin name
   ansible.builtin.set_fact:
-    plugins_label: "LuckPerms"
+    plugins_name: "WorldEdit"
+    plugins_path: "plugins/WorldEdit"
 
-- name: "Install {{ plugins_label }}"
+- name: "Install {{ plugins_name }}"
   ansible.builtin.include_role:
     name: pluginst
   vars:
-    pluginst_name: luckperms
-    pluginst_url: "https://download.luckperms.net/1606/bukkit/loader/LuckPerms-Bukkit-5.5.17.jar"
+    pluginst_name: worldedit
+      #    pluginst_url: "https://dev.bukkit.org/projects/worldedit/files/7150859/download"
+    pluginst_url: "https://hangarcdn.papermc.io/plugins/EngineHub/WorldEdit/versions/7.4.0-beta-01/PAPER/worldedit-bukkit-7.4.0-beta-01.jar"
 
-- name: "Copy configuration files for {{ plugins_label }}"
+- name: "Copy configuration files for {{ plugins_name }}"
   ansible.posix.synchronize:
     delete: true
     recursive: true
@@ -18,9 +20,9 @@
     dest: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     partial: true
     mode: "push"
-  register: plugins_luckperms_config
+  register: plugins_worldedit_config
 
-- name: "Reset config file ownership/permissions for {{ plugins_label }}"
+- name: "Reset config file ownership/permissions for {{ plugins_name }}"
   ansible.builtin.file:
     path: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     owner: "{{ minecraft_user }}"
@@ -29,7 +31,7 @@
     state: "directory"
     recurse: true
 
-- name: "Reset config dir ownership/permissions for {{ plugins_label }}"
+- name: "Reset config dir ownership/permissions for {{ plugins_name }}"
   ansible.builtin.file:
     path: "{{ minecraft_server_dir }}/{{ plugins_path }}"
     owner: "{{ minecraft_user }}"
@@ -38,9 +40,9 @@
     state: "directory"
     recurse: false
 
-- name: "Restart minecraft service after configuring {{ plugins_label }}"
+- name: Restart minecraft service after configuring plugin
   ansible.builtin.include_role:
     name: restart_server
-  when: plugins_luckperms_config.changed # noqa: no-handler
+  when: plugins_worldedit_config.changed # noqa: no-handler
     # This (^^^) can't be a handler because the restart has to
     # happen before the next plugin is installed.
