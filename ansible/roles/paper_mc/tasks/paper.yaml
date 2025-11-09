@@ -34,16 +34,11 @@
 
 - name: Build PaperMC server JAR file name
   ansible.builtin.set_fact:
-    paper_mc_jar_name: >
-      paper-{{ paper_mc_current }}-
-      {{ paper_mc_versions[paper_mc_current].build }}.jar
+    paper_mc_jar_name: "{{ 'paper-' ~ paper_mc_current ~ '-' ~ paper_mc_versions[paper_mc_current].build ~ '.jar' }}"
 
 - name: Download PaperMC server JAR {{ paper_mc_jar_name }}
   ansible.builtin.get_url:
-    url: >
-      {{ paper_mc_base }}/
-      {{ paper_mc_versions[paper_mc_current].check }}/
-      {{ paper_mc_jar_name }}
+    url: "{{ paper_mc_base ~ '/' ~ paper_mc_versions[paper_mc_current].check ~ '/' ~ paper_mc_jar_name }}"
     dest: "{{ download_cache_path }}/{{ paper_mc_jar_name }}"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
@@ -58,6 +53,7 @@
     mode: push
     rsync_opts:
       - "--checksum"
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: Set metadata on server.jar
   ansible.builtin.file:
