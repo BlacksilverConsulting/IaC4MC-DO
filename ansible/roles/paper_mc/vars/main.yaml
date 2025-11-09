@@ -1,7 +1,11 @@
 ---
-paper_mc_version: "1.21.5"
-paper_mc_build_number: "114"
+paper_mc_versions:
+  "1.21.5":
+    build: "114"
+    check: "2ae6ae22adf417699746e0f89fc2ef6cb6ee050a5f6608cee58f0535d60b509e"
+  "1.21.8":
+    build: "60"
+    check: "8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e"
+
+paper_mc_current: "1.21.5"
 paper_mc_base: "https://fill-data.papermc.io/v1/objects"
-paper_mc_jar_name: "paper-{{ paper_mc_version }}-{{ paper_mc_build_number }}.jar"
-paper_mc_jar_checksum: "2ae6ae22adf417699746e0f89fc2ef6cb6ee050a5f6608cee58f0535d60b509e"
-paper_mc_jar_url: "{{ paper_mc_base }}/{{ paper_mc_jar_checksum }}/{{ paper_mc_jar_name }}"

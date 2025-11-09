@@ -6,7 +6,7 @@
 
 - name: Create download cache dir
   ansible.builtin.file:
-    path: "{{ plugins_download_cache_path }}"
+    path: "{{ download_cache_path }}"
     state: directory
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"

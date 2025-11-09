@@ -1,12 +1,12 @@
 ---
+- name: Set up download cache
+  ansible.builtin.include_tasks: dl_cache.yaml
+
 - name: Install JDK
-  ansible.builtin.include_tasks: 100-jdk.yaml
+  ansible.builtin.include_tasks: jdk.yaml
 
 - name: Install Paper MC
-  ansible.builtin.include_tasks: 110-paper.yaml
+  ansible.builtin.include_tasks: paper.yaml
 
 - name: Create systemd service unit
-  ansible.builtin.include_tasks: 120-systemd.yaml
-
-- name: Set up download cache
-  ansible.builtin.include_tasks: 130-dl_cache.yaml
+  ansible.builtin.include_tasks: systemd.yaml

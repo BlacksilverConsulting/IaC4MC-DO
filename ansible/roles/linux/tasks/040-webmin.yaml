@@ -1,0 +1,63 @@
+---
+- name: Add Webmin repository using yum_repository module
+  ansible.builtin.yum_repository:
+    name: Webmin
+    description: Webmin Distribution Neutral
+    baseurl: https://download.webmin.com/download/yum
+    gpgcheck: false
+    enabled: true
+    file: webmin
+
+- name: Install Webmin and dependencies using DNF
+  ansible.builtin.dnf:
+    name:
+      - webmin
+      - perl-Net-SSLeay
+    state: present
+
+- name: Ensure Webmin service is running and enabled
+  ansible.builtin.service:
+    name: webmin
+    state: started
+    enabled: true
+
+- name: Set Webmin password and grant module access for '{{ linux_webmin_staff_username }}'
+  ansible.builtin.command: >
+    /usr/libexec/webmin/changepass.pl /etc/webmin '{{ linux_webmin_staff_username }}' 'reallybadpassword1'
+    #  -modules filemin
+  args:
+    creates: "/etc/webmin/{{ linux_webmin_staff_username }}/config" # Idempotency check
+
+- name: Configure filemin restrictions for '{{ linux_webmin_staff_username }}'
+  ansible.builtin.lineinfile:
+    path: "/etc/webmin/filemin/config"
+    regexp: "^users=.*"
+    line: "users={{ linux_webmin_staff_username }}"
+    state: present
+    insertafter: EOF
+
+- name: Create module config directory for '{{ linux_webmin_staff_username }}'
+  ansible.builtin.file:
+    path: "/etc/webmin/filemin/{{ linux_webmin_staff_username }}"
+    state: directory
+    mode: "0700"
+
+- name: Set allowed paths in File Manager for '{{ linux_webmin_staff_username }}'
+  ansible.builtin.template:
+    src: linux_webmin_filemin_user_config.j2
+    dest: "/etc/webmin/filemin/{{ linux_webmin_staff_username }}/config"
+    mode: "0600"
+  vars:
+    allowed_path: "{{ linux_webmin_filemanager_root_path }}"
+
+- name: Restart Webmin service to load new user and module configs
+  ansible.builtin.service:
+    name: webmin
+    state: restarted
+
+- name: Configure default root directory for File Manager (for all users)
+  ansible.builtin.lineinfile:
+    path: /etc/webmin/filemin/config
+    regexp: "^root="
+    line: "root={{ linux_webmin_filemanager_root_path }}"
+    state: present

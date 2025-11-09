@@ -1,10 +1,10 @@
 ---
-- name: Create minecraft group
+- name: OS group {{ minecraft_group }}
   ansible.builtin.group:
     name: "{{ minecraft_group }}"
     state: present
 
-- name: Create minecraft user
+- name: OS user {{ minecraft_user }}
   ansible.builtin.user:
     name: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
@@ -14,12 +14,7 @@
     shell: "/bin/nologin"
     state: present
 
-- name: Check for Minecraft server directory
-  ansible.builtin.stat:
-    path: "{{ minecraft_server_dir }}"
-  register: paper_mc_server_dir
-
-- name: Minecraft server directory
+- name: Server directory {{ minecraft_server_dir }}
   ansible.builtin.file:
     path: "{{ minecraft_server_dir }}"
     state: directory
@@ -27,9 +22,8 @@
     group: "{{ minecraft_group }}"
     mode: "0755"
     recurse: true
-  when: not paper_mc_server_dir.stat.exists
 
-- name: Plugins directory
+- name: Plugins directory {{ plugins_dir }}
   ansible.builtin.file:
     path: "{{ plugins_dir }}"
     state: directory
@@ -38,28 +32,41 @@
     mode: "0755"
     recurse: true
 
-- name: Download PaperMC server JAR
+- name: Build PaperMC server JAR file name
+  ansible.builtin.set_fact:
+    paper_mc_jar_name: >
+      paper-{{ paper_mc_current }}-
+      {{ paper_mc_versions[paper_mc_current].build }}.jar
+
+- name: Download PaperMC server JAR {{ paper_mc_jar_name }}
   ansible.builtin.get_url:
-    url: "{{ paper_mc_jar_url }}"
-    dest: "{{ minecraft_server_dir }}/{{ paper_mc_jar_name }}"
+    url: >
+      {{ paper_mc_base }}/
+      {{ paper_mc_versions[paper_mc_current].check }}/
+      {{ paper_mc_jar_name }}
+    dest: "{{ download_cache_path }}/{{ paper_mc_jar_name }}"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
     mode: "0644"
-    checksum: "sha256:{{ paper_mc_jar_checksum }}"
+    checksum: "sha256:{{ paper_mc_versions[paper_mc_current].check }}"
     validate_certs: true
 
-- name: Link generic server.jar to PaperMC JAR
-  # (So we don't have to update the systemd unit file)
-  ansible.builtin.file:
-    src: "{{ minecraft_server_dir }}/{{ paper_mc_jar_name }}"
+- name: Install PaperMC server JAR {{ paper_mc_jar_name }}
+  ansible.posix.synchronize:
+    src: "{{ download_cache_path }}/{{ paper_mc_jar_name }}"
     dest: "{{ minecraft_server_dir }}/server.jar"
-    state: link
+    mode: push
+    rsync_opts:
+      - "--checksum"
+
+- name: Set metadata on server.jar
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}/server.jar"
     owner: "{{ minecraft_user }}"
     group: "{{ minecraft_group }}"
-  become: true
-  become_user: minecraft
+    mode: "0755"
 
-- name: Install server.properties from template
+- name: Install {{ minecraft_propfile }}
   ansible.builtin.template:
     src: "{{ minecraft_propfile }}.j2"
     dest: "{{ minecraft_server_dir }}/{{ minecraft_propfile }}"
@@ -67,7 +74,7 @@
     group: "{{ minecraft_group }}"
     mode: "0644"
 
-- name: Create EULA file (PaperMC also requires EULA)
+- name: Create EULA file
   ansible.builtin.copy:
     content: |
       #By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).

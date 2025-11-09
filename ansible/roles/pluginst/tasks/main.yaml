@@ -2,13 +2,13 @@
 # This role expects the following facts/vars to be set:
 # pluginst_name: "foo" --> plugins/foo.jar
 # pluginst_url: "https://plugins.net/path/foo-1.2.3.jar"
-# plugins_download_cache_path: A writeable, persistent directory on the target
+# download_cache_path: A writeable, persistent directory on the target
 #   that already exists
 # plugins_dir: The directory where plugins go to be part of the server
 
 - name: "Cache slot for {{ pluginst_name }}"
   ansible.builtin.set_fact:
-    pluginst_cache_file: "{{ plugins_download_cache_path }}/{{ pluginst_name }}.jar"
+    pluginst_cache_file: "{{ download_cache_path }}/{{ pluginst_name }}.jar"
     pluginst_live_file: "{{ plugins_dir }}/{{ pluginst_name }}.jar"
 
 # It would be nice to not download every time,
