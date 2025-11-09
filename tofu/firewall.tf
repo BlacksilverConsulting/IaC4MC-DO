@@ -4,7 +4,7 @@ locals {
     world   = ["0.0.0.0/0", "::/0"]
   }
   proto = { tcp = "tcp", udp = "udp", icmp = "icmp" }
-  port  = { all = "1-65535", ssh = "22", console = "8080", mc = "25611", http = 80 }
+  port  = { all = "1-65535", ssh = "22", console = "8080", mc = "25611", http = "80", https = "443", webmin = "10000" }
 }
 
 resource "digitalocean_firewall" "prod" {
@@ -20,6 +20,12 @@ resource "digitalocean_firewall" "prod" {
 
   inbound_rule {
     protocol         = local.proto.tcp
+    port_range       = local.port.webmin
+    source_addresses = local.addr.world
+  }
+
+inbound_rule {
+    protocol         = local.proto.tcp
     port_range       = local.port.mc
     source_addresses = local.addr.world
   }
@@ -27,13 +33,19 @@ resource "digitalocean_firewall" "prod" {
   inbound_rule {
     protocol         = local.proto.tcp
     port_range       = local.port.http
-    source_addresses = local.addr.trusted
+    source_addresses = local.addr.world # For Let's Encrypt
+  }
+
+  inbound_rule {
+    protocol         = local.proto.tcp
+    port_range       = local.port.https
+    source_addresses = local.addr.world # For Let's Encrypt
   }
 
   inbound_rule {
     protocol         = local.proto.tcp
     port_range       = local.port.console
-    source_addresses = local.addr.trusted
+    source_addresses = local.addr.world
   }
 
   outbound_rule {

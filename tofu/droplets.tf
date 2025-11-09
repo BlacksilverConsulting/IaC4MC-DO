@@ -8,10 +8,13 @@ resource "digitalocean_droplet" "prod" {
   region = local.region
   size   = local.droplet.size
 
-  name = "${local.project}1"
+  # Yes, this name doesn't match.
+  # We're trying to get the prod slot working
+  name = "${local.project}test"
 
   ssh_keys = [data.terraform_remote_state.fsitma.outputs.pbmac_ssh_key_id,
-  data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id]
+  data.terraform_remote_state.fsitma.outputs.glowy_ssh_key_id,
+  digitalocean_ssh_key.staff.id]
 
   droplet_agent = local.droplet.agent
 
