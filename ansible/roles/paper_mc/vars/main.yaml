@@ -7,5 +7,5 @@ paper_mc_versions:
     build: "60"
     check: "8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e"
 
-paper_mc_current: "1.21.5"
+paper_mc_current: "1.21.8"
 paper_mc_base: "https://fill-data.papermc.io/v1/objects"

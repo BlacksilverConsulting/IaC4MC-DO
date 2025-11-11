@@ -1,6 +1,6 @@
 ---
-- name: Set up download cache
-  ansible.builtin.include_tasks: dl_cache.yaml
+- name: Set up directories
+  ansible.builtin.include_tasks: directories.yaml
 
 - name: Install JDK
   ansible.builtin.include_tasks: jdk.yaml

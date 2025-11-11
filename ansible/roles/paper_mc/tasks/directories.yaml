@@ -1,0 +1,26 @@
+---
+- name: Server directory {{ minecraft_server_dir }}
+  ansible.builtin.file:
+    path: "{{ minecraft_server_dir }}"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0755"
+    recurse: true
+
+- name: Plugins directory {{ plugins_dir }}
+  ansible.builtin.file:
+    path: "{{ plugins_dir }}"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0755"
+    recurse: true
+
+- name: Create download cache dir
+  ansible.builtin.file:
+    path: "{{ download_cache_path }}"
+    state: directory
+    owner: "{{ minecraft_user }}"
+    group: "{{ minecraft_group }}"
+    mode: "0744"
