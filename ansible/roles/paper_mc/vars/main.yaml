@@ -6,6 +6,9 @@ paper_mc_versions:
   "1.21.8":
     build: "60"
     check: "8de7c52c3b02403503d16fac58003f1efef7dd7a0256786843927fa92ee57f1e"
-
-paper_mc_current: "1.21.8"
+  "1.21.10":
+    url: "https://fill-data.papermc.io/v1/objects/2c825ddbe47897db1efbf1adfef0dbcfee7ebab2f959168cf59a654f3bdd0b36/paper-1.21.10-108.jar"
+    build: "108"
+    check: "2c825ddbe47897db1efbf1adfef0dbcfee7ebab2f959168cf59a654f3bdd0b36"
+paper_mc_current: "1.21.10"
 paper_mc_base: "https://fill-data.papermc.io/v1/objects"
